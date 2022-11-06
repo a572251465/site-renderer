@@ -1,0 +1,34 @@
+const { program } = require('commander')
+const { downloadTpl } = require('./downloadTpl')
+const { makeData } = require('./makeData')
+const { replaceNode } = require('./replaceNode')
+const { compileFile } = require('./compileFile')
+const { genData } = require('./genData')
+const { setNavData } = require('./utils')
+
+;(async () => {
+  program
+    .option('-n, --name <name>', 'please input blob name', ',')
+    .option('-l, --url <url>', 'please input github address', ',')
+
+  program.parse(process.argv)
+
+  // 选择查询到参数结果
+  const options = { ...program.opts(), cwd: process.cwd() }
+  if (options.name === ',') options.name = ''
+  if (options.url === ',') options.url = ''
+
+  // 每次初期化数据
+  setNavData(null)
+
+  // 下载模板
+  await downloadTpl(options)
+  // 构建数据 读取md文件 在指定编译目录下重新生成mdx
+  makeData()
+  // 构建json对象的数据
+  const arrData = genData()
+  // 替换节点
+  replaceNode(options, arrData)
+  // 编译文件
+  compileFile()
+})()
