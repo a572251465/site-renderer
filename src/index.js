@@ -4,7 +4,7 @@ const { makeData } = require('./makeData')
 const { replaceNode } = require('./replaceNode')
 const { compileFile } = require('./compileFile')
 const { genData } = require('./genData')
-const { setNavData } = require('./utils')
+const { setNavData, loading } = require('./utils')
 
 ;(async () => {
   program
@@ -23,6 +23,7 @@ const { setNavData } = require('./utils')
 
   // 下载模板
   await downloadTpl(options)
+  await loading()
   console.log('√ 1. template download succeeded')
   // 构建数据 读取md文件 在指定编译目录下重新生成mdx
   makeData()

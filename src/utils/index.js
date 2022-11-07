@@ -1,6 +1,7 @@
 const { exec } = require('child_process')
 const path = require('path')
 const fs = require('fs')
+const ProgressBar = require('progress')
 
 // 表示解析 目录导航数据
 const navData = []
@@ -44,11 +45,26 @@ const execCommand = (command, options = {}) => {
   })
 }
 
+// 进度条
+const loading = () => {
+  return new Promise((resolve) => {
+    const bar = new ProgressBar('parsing [:bar] :percent :etas', { total: 50 })
+    const timer = setInterval(function () {
+      bar.tick()
+      if (bar.complete) {
+        clearInterval(timer)
+        resolve()
+      }
+    }, 20)
+  })
+}
+
 module.exports = {
   getNavData,
   setNavData,
   genCompRef,
   genRandomKey,
   setMdxFileData,
-  execCommand
+  execCommand,
+  loading
 }
