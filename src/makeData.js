@@ -41,7 +41,7 @@ const makeData = () => {
     return
   }
 
-  const excludeNames = ['node_modules', '.git', '.gitignore']
+  const excludeNames = ['node_modules', '.git', '.gitignore', "blob-page-template"]
   dirs.forEach((dirName) => {
     const newPath = path.resolve(_cwd, dirName)
     const pathAttr = fs.statSync(newPath)

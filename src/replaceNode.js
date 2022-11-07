@@ -13,17 +13,17 @@ const replaceNode = (options, arrData) => {
   const navData = getNavData()
   const refNames = navData.filter((item) => Reflect.has(item, 'refName')).map((item) => item.refName)
 
-  const importNames = refNames.map((name) => `import ${name} from "./components/mdx/${name}.mdx";`)
+  const importNames = refNames.map((name) => `${name}: defineAsyncComponent(() => import("./components/mdx/${name}.mdx"))`)
   // 指定文件
   let assignFile = path.resolve(options.cwd, 'blob-page-template/src/App.vue')
-  let content = fs.readFileSync(assignFile, 'utf-8').replace(`// <!-- import-components -->`, importNames.join(' '))
+  let content = fs.readFileSync(assignFile, 'utf-8')
 
   // 2. 替换 // <!-- components-replace --> 节点
-  const componentsTpl = `components: { ${refNames.concat('Header').join(',')} },`
+  const componentsTpl = `components: { ${importNames.concat('Header').join(',')} },`
   content = content.replace(`// <!-- components-replace -->`, componentsTpl)
 
   // 3. 替换 // <!-- mock-data --> 节点
-  content = content.replace(`// <!-- mock-data -->`, `mockData = ${JSON.stringify(arrData)};`)
+  content = content.replace(`// <!-- mock-data -->`, `const mockData = ${JSON.stringify(arrData)};`)
   fs.writeFileSync(assignFile, content, { encoding: 'utf-8' })
 
   // 4. 替换 <!--  js-replaces  --> 节点
@@ -40,6 +40,7 @@ const replaceNode = (options, arrData) => {
   fs.writeFileSync(
     assignFile,
     `
+    window._selfField = {};
     window._selfField.name = "${name}";
     window._selfField.url = "${url}"
   `
